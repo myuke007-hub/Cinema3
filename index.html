@@ -717,6 +717,9 @@
         let listaAcessosRecentes = [];
         let html5QrcodeScanner = null;
         let overlayTimeout = null;
+        
+        // Flag para controle e prevenção de bipes/leituras duplicadas e sucessivas rápidas da câmera
+        let scanBloqueado = false;
 
         let imagemFundoGlobal = localStorage.getItem("cine_imagem_fundo") || "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80";
 
@@ -954,7 +957,6 @@
                 ticket.style.backgroundImage = `url('${imagemFundoGlobal}')`;
                 let qrcodeId = "qr_" + codigoUnico;
 
-                // QR Code agora gerado em tamanho 85 para combinar com o ingresso compacto
                 ticket.innerHTML = `
                     <h4>BILHETE CINEMA</h4>
                     <div class="filme-txt">${sessoes[idSessao].filme}</div>
@@ -1001,13 +1003,25 @@
 
         function iniciarCamera() {
             if(html5QrcodeScanner) { html5QrcodeScanner.clear(); }
+            
+            scanBloqueado = false; // Garante inicialização desbloqueada
+
             html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
                 fps: 15, 
                 qrbox: 220,
                 videoConstraints: { facingMode: "environment" }
             });
+            
             html5QrcodeScanner.render((decodedText) => {
+                if (scanBloqueado) return; // Se estiver no tempo de espera (cooldown), ignora a leitura
+                scanBloqueado = true;
+                
                 validarSenha(decodedText);
+                
+                // Desbloqueia após 2.0 segundos (2000 milissegundos) para nova leitura
+                setTimeout(() => {
+                    scanBloqueado = false;
+                }, 2000);
             }, (error) => {});
         }
 
@@ -1124,24 +1138,4 @@
     </script>
 </body>
 </html>
-ent("div");
-                item.className = "sessao-item";
-                item.innerHTML = `
-                    🎬 <strong>${sessoes[id].filme}</strong><br>
-                    Exibição: ${formatarDataBR(sessoes[id].data)} às ${sessoes[id].horario}<br>
-                    Disponibilidade: ${sessoes[id].disponivel} de ${sessoes[id].total} vagas<br><br>
-                    <button class="btn-danger" onclick="removerSessao('${id}')">🗑️ Excluir Sala</button>
-                `;
-                lista.appendChild(item);
-            }
-        }
 
-        function resetarTudo() {
-            if(confirm("ATENÇÃO: Isso apagará TODOS os dados! Continuar?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-    </script>
-</body>
-</html>
