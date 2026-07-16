@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CineManager Pro - Mobile</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --md-bg: #0f0e13;
+            --md-surface: #1b1a22;
+            --md-surface-variant: #25242e;
+            --md-primary: #a8c7fa;
+            --md-on-primary: #062e6f;
+            --md-primary-container: #004a77;
+            --md-secondary: #c2c6dc;
+            --md-error: #ffb4ab;
+            --md-on-error: #690005;
+            --md-error-container: #ffdad6;
+            --md-success: #38e54d;
+            --md-on-success: #00390a;
+            --md-text: #e3e2e6;
+            --md-text-muted: #91909a;
+            --border-radius-lg: 24px;
+            --border-radius-md: 16px;
+            --border-radius-sm: 12px;
+            --transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body { 
+            font-family: 'Roboto', 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background-color: var(--md-bg); 
+            color: var(--md-text);
+            margin: 0; 
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* BARRA SUPERIOR (APP BAR) */
+        .app-bar {
+            background-color: var(--md-surface);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .app-bar h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .app-bar h1 span {
+            color: var(--md-primary);
+        }
+
+        .btn-logout {
+            background: none;
+            border: none;
+            color: var(--md-error);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: var(--border-radius-sm);
+            background: rgba(255, 180, 171, 0.1);
+        }
+
+        /* CONTEÚDO PRINCIPAL */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            padding-bottom: 100px; /* Espaço para a Bottom Nav */
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .card { 
+            background: var(--md-surface); 
+            padding: 24px; 
+            border-radius: var(--border-radius-lg); 
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            text-align: left;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* INPUTS ESTILO MATERIAL */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--md-primary);
+            margin-bottom: 6px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select { 
+            width: 100%;
+            padding: 16px; 
+            border: 2px solid var(--md-surface-variant); 
+            border-radius: var(--border-radius-sm); 
+            background: var(--md-surface-variant);
+            color: #fff;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+        input:focus, select:focus { 
+            border-color: var(--md-primary); 
+            background: var(--md-bg);
+            outline: none; 
+        }
+
+        /* BOTÕES ESTILO MATERIAL DESIGN 3 */
+        button { 
+            background-color: var(--md-primary); 
+            color: var(--md-on-primary); 
+            border: none; 
+            padding: 16px 24px; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-size: 15px; 
+            font-weight: 600;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            margin-top: 8px;
+        }
+        button:hover { 
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        button:active { 
+            transform: scale(0.97); 
+        }
+        
+        button.btn-secundario {
+            background-color: var(--md-surface-variant);
+            color: var(--md-text);
+        }
+
+        button.btn-danger { 
+            background-color: rgba(255, 180, 171, 0.15); 
+            color: var(--md-error); 
+            padding: 10px 16px;
+            font-size: 13px;
+            border-radius: var(--border-radius-sm);
+            width: auto;
+        }
+        
+        button.btn-warning { 
+            background-color: var(--md-error); 
+            color: var(--md-on-error);
+        }
+
+        /* ELEMENTOS DO TICKET E INGRESSO */
+        .info-box {
+            background: var(--md-surface-variant);
+            padding: 16px;
+            border-radius: var(--border-radius-md);
+            margin-top: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .sessao-item { 
+            background: var(--md-surface-variant); 
+            border-radius: var(--border-radius-md); 
+            padding: 18px; 
+            margin-top: 12px; 
+            position: relative;
+        }
+
+        /* NAVEGAÇÃO INFERIOR */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background-color: var(--md-surface);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 99;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--md-text-muted);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            width: 33.33%;
+            height: 100%;
+            transition: var(--transition);
+        }
+
+        .nav-icon {
+            font-size: 22px;
+            padding: 4px 16px;
+            border-radius: 16px;
+            margin-bottom: 4px;
+            transition: var(--transition);
+        }
+
+        .nav-item.active {
+            color: var(--md-primary);
+        }
+
+        .nav-item.active .nav-icon {
+            background-color: var(--md-primary-container);
+            color: #fff;
+        }
+
+        /* TELA DE LOGIN ESTILIZADA */
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* STATUS DE CONFIRMAÇÃO DA ENTRADA */
+        .status-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease-out;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .status-overlay.aprovado {
+            background-color: #0b2d12;
+            color: #cbf2d1;
+            border: 8px solid var(--md-success);
+        }
+
+        .status-overlay.recusado {
+            background-color: #3d0003;
+            color: #ffdad6;
+            border: 8px solid var(--md-error);
+        }
+
+        .status-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .status-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .status-desc {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .status-code {
+            font-family: monospace;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .checkin-item { 
+            padding: 12px 16px; 
+            font-size: 13px; 
+            border-left: 4px solid var(--md-success); 
+            margin-top: 8px; 
+            background: var(--md-surface-variant); 
+            border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+        }
+
+        #reader { 
+            width: 100%; 
+            margin-top: 12px; 
+            border-radius: var(--border-radius-md); 
+            overflow: hidden; 
+            border: 2px solid var(--md-surface-variant); 
+        }
+
+        .hidden { display: none !important; }
+
+        /* IMPRESSÃO E PDF */
+        .folha-container-pdf {
+            background: #191922;
+            padding: 15px;
+            border-radius: var(--border-radius-md);
+            margin-top: 15px;
+            border: 1px dashed rgba(255,255,255,0.1);
+        }
+
+        .folha-impressao {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            justify-items: center;
+            justify-content: center;
+        }
+
+        /* INGRESSO OTIMIZADO E COMPACTO */
+        .ingresso-antigo {
+            font-family: 'Courier New', Courier, monospace;
+            width: 100%;
+            max-width: 80mm; /* Tamanho reduzido para melhor ajuste na página */
+            border: 2px dashed #555;
+            padding: 14px 12px; /* Margens internas reduzidas */
+            background-color: #23232a;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            text-align: center;
+            color: #eee;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            overflow: hidden;
+            
+            /* Evita quebras de página pela metade do bilhete ao gerar PDF ou Imprimir */
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* Camada escura de legibilidade por cima da imagem de fundo */
+        .ingresso-antigo::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 14, 19, 0.82); 
+            z-index: 1;
+        }
+
+        .ingresso-antigo * {
+            position: relative;
+            z-index: 2; 
+        }
+
+        .ingresso-antigo h4 { 
+            margin: 0 0 6px 0; 
+            font-size: 14px; 
+            border-bottom: 2px solid rgba(255,255,255,0.3); 
+            padding-bottom: 4px; 
+            color: #fff; 
+        }
+        
+        .ingresso-antigo .filme-txt { 
+            font-size: 13px; 
+            font-weight: bold; 
+            margin: 8px 0; 
+            min-height: 20px; 
+            text-transform: uppercase; 
+            color: #fff;
+        }
+        
+        .ingresso-antigo .info-data-txt { 
+            display: block; 
+            font-size: 11px; 
+            margin-bottom: 8px; 
+            border-bottom: 1px solid rgba(255,255,255,0.3); 
+            padding-bottom: 6px;
+        }
+        
+        .ingresso-antigo .qr-container { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            margin: 8px auto; 
+            background: white; 
+            padding: 6px; 
+            border-radius: 6px; 
+            width: 85px; 
+            height: 85px; 
+        }
+        
+        .ingresso-antigo .cod-txt { 
+            display: block; 
+            font-size: 12px; 
+            font-weight: bold; 
+            margin-top: 6px; 
+            color: #fff; 
+            letter-spacing: 1px; 
+        }
+        
+        .ingresso-antigo .canhoto { 
+            display: block; 
+            border-top: 1px dashed rgba(255,255,255,0.3); 
+            margin-top: 10px; 
+            padding-top: 6px; 
+            font-size: 9px; 
+            color: #bbb; 
+        }
+
+        @media (min-width: 600px) {
+            .folha-impressao { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* MODO IMPRESSÃO REAL E PDF (Preserva a imagem de fundo) */
+        .modo-impressao-real .folha-container-pdf { 
+            background: #ffffff !important; 
+            padding: 8mm !important; 
+        }
+        
+        .modo-impressao-real .ingresso-antigo { 
+            max-width: 80mm !important; 
+            border: 2px dashed #121214 !important; 
+            color: #fff !important; 
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+        
+        .modo-impressao-real .ingresso-antigo::before { 
+            background: rgba(0, 0, 0, 0.78) !important; 
+        }
+        
+        .modo-impressao-real .ingresso-antigo h4 { 
+            border-bottom: 2px solid rgba(255,255,255,0.4) !important; 
+            color: #fff !important; 
+        }
+        
+        .modo-impressao-real .ingresso-antigo .filme-txt, 
+        .modo-impressao-real .ingresso-antigo .cod-txt { 
+            color: #fff !important; 
+        }
+        
+        .modo-impressao-real .ingresso-antigo .info-data-txt { 
+            border-bottom: 1px solid rgba(255,255,255,0.4) !important; 
+            color: #eee !important; 
+        }
+
+        /* CONFIGURAÇÃO EXTRA PARA CONTROLE DE PÁGINAS EM IMPRESSÃO REAL (CTRL+P) */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #folha-recorte, #folha-recorte * {
+                visibility: visible;
+            }
+            #folha-recorte {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100% !important;
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10mm !important;
+                padding: 10mm !important;
+                background: #ffffff !important;
+            }
+            .ingresso-antigo {
+                max-width: 80mm !important;
+                border: 2px dashed #000000 !important;
+                color: #000000 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .ingresso-antigo::before {
+                background: rgba(0, 0, 0, 0.05) !important; 
+            }
+            .ingresso-antigo * {
+                color: #000000 !important;
+            }
+            .ingresso-antigo h4, .ingresso-antigo .info-data-txt {
+                border-color: #000000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="painel-aprovado" class="status-overlay aprovado hidden" onclick="fecharStatusOverlay()">
+        <div class="status-icon">✅</div>
+        <div class="status-title">Acesso Liberado!</div>
+        <div class="status-desc" id="aprovado-filme">Nome do Filme</div>
+        <div class="status-code" id="aprovado-codigo">CINE-000000</div>
+        <div style="font-size: 12px; margin-top: 25px; opacity: 0.7;">Toque em qualquer lugar para fechar</div>
+    </div>
+
+    <div id="painel-recusado" class="status-overlay recusado hidden" onclick="fecharStatusOverlay()">
+        <div class="status-icon">❌</div>
+        <div class="status-title">Entrada Negada!</div>
+        <div class="status-desc" id="recusado-motivo">Bilhete já processado ou Inválido.</div>
+        <div style="font-size: 12px; margin-top: 25px; opacity: 0.7;">Toque em qualquer lugar para fechar</div>
+    </div>
+
+    <div class="login-screen" id="container-login">
+        <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <span style="font-size: 48px;">🎬</span>
+                <h2 style="margin: 10px 0 5px 0;">CineManager Pro</h2>
+                <p style="color: var(--md-text-muted); margin: 0; font-size: 14px;">Administração de Bilheteria</p>
+            </div>
+            
+            <div class="input-group">
+                <label>Usuário</label>
+                <input type="text" id="user-admin" placeholder="Ex: admin">
+            </div>
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" id="pass-admin" placeholder="••••">
+            </div>
+            
+            <button onclick="fazerLogin()">Entrar no Painel →</button>
+            <p id="msg-login" class="mensagem recusado hidden" style="color: var(--md-error); text-align: center; margin-top: 15px; font-weight: bold;"></p>
+        </div>
+    </div>
+
+    <div id="container-admin" class="hidden">
+        <div class="app-bar">
+            <h1>🎬 <span>CineManager</span></h1>
+            <button class="btn-logout" onclick="fazerLogout()">Sair</button>
+        </div>
+
+        <div class="main-content">
+            
+            <div id="aba-bilheteria" class="tab-content">
+                <div class="card">
+                    <h3>🎟️ Emissão de Bilhetes</h3>
+                    
+                    <div class="input-group">
+                        <label>Sessão Ativa</label>
+                        <select id="selecao-filme" onchange="atualizarSessaoAtiva()"></select>
+                    </div>
+
+                    <div id="dados-sessao-selecionada" class="info-box">
+                        Horário: <strong id="info-horario" style="color: var(--md-primary);">-</strong><br>
+                        Capacidade Restante: <strong id="vagas-atual" style="color: var(--md-success);">-</strong>
+                    </div>
+
+                    <div class="input-group" style="margin-top: 15px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: var(--border-radius-sm); border: 1px dashed rgba(255,255,255,0.1);">
+                        <label style="color: var(--md-primary); margin-bottom: 10px; display: block;">🖼️ Imagem de Fundo do Bilhete</label>
+                        <input type="file" id="upload-fundo-ingresso" accept="image/*" onchange="carregarImagemLocal(this)" style="padding: 10px; font-size: 12px; background: transparent; border: none; margin-bottom: 10px;">
+                        <input type="text" id="url-fundo-ingresso" placeholder="Ou cole a URL de uma imagem da Web" oninput="atualizarImagemUrl(this.value)">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Quantidade a Gerar (Máx. 15)</label>
+                        <input type="number" id="qtd-ingressos" min="1" max="15" value="15">
+                    </div>
+
+                    <button onclick="gerarLoteIngressos()">⚡ Gerar Lote de Bilhetes</button>
+
+                    <div id="bloco-impressao" class="hidden" style="margin-top: 25px;">
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <button class="btn-secundario" onclick="salvarComoPDF()" style="flex: 1;">💾 Salvar PDF</button>
+                            <button class="btn-secundario" onclick="imprimirDireto()" style="flex: 1;">🖨️ Imprimir</button>
+                        </div>
+                        <div class="folha-container-pdf" id="area-alvo-pdf">
+                            <div class="folha-impressao" id="folha-recorte"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="aba-portaria" class="tab-content hidden">
+                <div class="card">
+                    <h3>📷 Controle de Entrada</h3>
+                    
+                    <div id="reader"></div>
+                    <button onclick="iniciarCamera()" style="margin-top: 15px;">📸 Ativar Câmera Traseira</button>
+                    
+                    <div class="input-group" style="margin-top: 20px;">
+                        <label>Código Manual</label>
+                        <input type="text" id="input-leitor" placeholder="Ex: CINE-123456">
+                    </div>
+                    <button class="btn-secundario" onclick="validarSenha(document.getElementById('input-leitor').value)">🔍 Validar Manual</button>
+
+                    <h4 style="margin: 25px 0 10px 0; font-size: 14px; color: var(--md-text-muted);">⏱️ Últimos 5 Processados</h4>
+                    <div id="historico-checkin">
+                        <div style="color: var(--md-text-muted); font-size: 13px;">Nenhum bilhete processado na sessão atual.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="aba-painel" class="tab-content hidden">
+                <div class="card">
+                    <h3>📊 Indicadores</h3>
+                    <div class="info-box" style="background: var(--md-surface); border: 1px solid var(--md-surface-variant);">
+                        Filme Selecionado: <strong id="stats-nome-filme" style="color: #fff;">-</strong><br>
+                        Emitidos: <strong id="stats-criados" style="color: var(--md-primary);">0</strong><br>
+                        Confirmados: <strong id="stats-validados" style="color: var(--md-success);">0</strong><br>
+                        Pendentes: <strong id="stats-pendentes" style="color: #ffb4ab;">0</strong>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>➕ Nova Sessão</h3>
+                    <div class="input-group">
+                        <label>Título do Filme</label>
+                        <input type="text" id="novo-filme" placeholder="Nome do filme">
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 12px; color: var(--md-primary);">Data</label>
+                            <input type="date" id="nova-data">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-size: 12px; color: var(--md-primary);">Horário</label>
+                            <input type="time" id="novo-horario">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Lotação Máxima</label>
+                        <input type="number" id="nova-quantidade" placeholder="Ex: 60">
+                    </div>
+                    <button onclick="criarSessao()">💾 Salvar Sessão</button>
+                </div>
+
+                <div class="card">
+                    <h3>📊 Salas Monitoradas</h3>
+                    <div id="lista-sessoes-admin"></div>
+                </div>
+
+                <button class="btn-warning" onclick="resetarTudo()" style="margin-top: 20px;">⚠️ Limpar Todo o Sistema</button>
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="#" class="nav-item active" onclick="alternarAba(event, 'aba-bilheteria', this)">
+                <div class="nav-icon">🎟️</div>
+                <span>Bilheteria</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alternarAba(event, 'aba-portaria', this)">
+                <div class="nav-icon">📷</div>
+                <span>Portaria</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alternarAba(event, 'aba-painel', this)">
+                <div class="nav-icon">⚙️</div>
+                <span>Painel</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let sessoes = JSON.parse(localStorage.getItem("cine_sessoes")) || {
+            "sessao_1": { filme: "Vingadores: Ultimato", data: "2026-06-25", horario: "20:00", total: 60, disponivel: 60 },
+            "sessao_2": { filme: "Avatar: O Caminho da Água", data: "2026-06-26", horario: "18:30", total: 40, disponivel: 40 }
+        };
+        
+        let bancoDeIngressos = JSON.parse(localStorage.getItem("cine_bancoDeIngressos")) || {}; 
+        let listaAcessosRecentes = [];
+        let html5QrcodeScanner = null;
+        let overlayTimeout = null;
+
+        let imagemFundoGlobal = localStorage.getItem("cine_imagem_fundo") || "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80";
+
+        function carregarImagemLocal(input) {
+            if (input.files && input.files[0]) {
+                let leitor = new FileReader();
+                leitor.onload = function(e) {
+                    imagemFundoGlobal = e.target.result;
+                    localStorage.setItem("cine_imagem_fundo", imagemFundoGlobal);
+                    aplicarFundoAosIngressos();
+                };
+                leitor.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function atualizarImagemUrl(url) {
+            if(url.trim() !== "") {
+                imagemFundoGlobal = url.trim();
+                localStorage.setItem("cine_imagem_fundo", imagemFundoGlobal);
+                aplicarFundoAosIngressos();
+            }
+        }
+
+        function aplicarFundoAosIngressos() {
+            document.querySelectorAll(".ingresso-antigo").forEach(ticket => {
+                ticket.style.backgroundImage = `url('${imagemFundoGlobal}')`;
+            });
+        }
+
+        function tocarSom(tipo) {
+            let context = new (window.AudioContext || window.webkitAudioContext)();
+            
+            if (tipo === "sucesso") {
+                let osc1 = context.createOscillator();
+                let osc2 = context.createOscillator();
+                let gain = context.createGain();
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(context.destination);
+
+                osc1.type = "sine";
+                osc2.type = "sine";
+
+                osc1.frequency.setValueAtTime(659.25, context.currentTime); 
+                osc2.frequency.setValueAtTime(783.99, context.currentTime + 0.08); 
+
+                gain.gain.setValueAtTime(0.3, context.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.35);
+
+                osc1.start();
+                osc2.start();
+                osc1.stop(context.currentTime + 0.35);
+                osc2.stop(context.currentTime + 0.35);
+            } else {
+                let osc = context.createOscillator();
+                let gain = context.createGain();
+
+                osc.connect(gain);
+                gain.connect(context.destination);
+
+                osc.type = "sawtooth";
+                osc.frequency.setValueAtTime(220, context.currentTime);
+                osc.frequency.linearRampToValueAtTime(80, context.currentTime + 0.4);
+
+                gain.gain.setValueAtTime(0.4, context.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.45);
+
+                osc.start();
+                osc.stop(context.currentTime + 0.45);
+            }
+        }
+
+        function alternarAba(event, idAba, elemento) {
+            event.preventDefault();
+            document.querySelectorAll('.tab-content').forEach(aba => {
+                aba.classList.add('hidden');
+            });
+            document.getElementById(idAba).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            elemento.classList.add('active');
+
+            if (idAba !== 'aba-portaria' && html5QrcodeScanner) {
+                html5QrcodeScanner.clear();
+            }
+        }
+
+        function mostrarVisualStatus(tipo, titulo, subtitulo, codigo = "") {
+            fecharStatusOverlay();
+            if (tipo === "aprovado") {
+                document.getElementById("aprovado-filme").innerText = subtitulo;
+                document.getElementById("aprovado-codigo").innerText = codigo;
+                document.getElementById("painel-aprovado").classList.remove("hidden");
+            } else {
+                document.getElementById("recusado-motivo").innerText = subtitulo;
+                document.getElementById("painel-recusado").classList.remove("hidden");
+            }
+
+            overlayTimeout = setTimeout(() => {
+                fecharStatusOverlay();
+            }, 3500);
+        }
+
+        function fecharStatusOverlay() {
+            document.getElementById("painel-aprovado").classList.add("hidden");
+            document.getElementById("painel-recusado").classList.add("hidden");
+            if (overlayTimeout) clearTimeout(overlayTimeout);
+        }
+
+        function formatarDataBR(dataEstrangeira) {
+            if(!dataEstrangeira) return "--/--/----";
+            let partes = dataEstrangeira.split("-");
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+
+        function salvarNoNavegador() {
+            localStorage.setItem("cine_sessoes", JSON.stringify(sessoes));
+            localStorage.setItem("cine_bancoDeIngressos", JSON.stringify(bancoDeIngressos));
+        }
+
+        function inicializarSistema() {
+            atualizarSelectAdmin();
+            renderizarSessoesAdmin();
+            if(localStorage.getItem("cine_imagem_fundo")) {
+                document.getElementById("url-fundo-ingresso").value = localStorage.getItem("cine_imagem_fundo").substring(0, 100) + "...";
+            }
+        }
+
+        function atualizarSelectAdmin() {
+            let select = document.getElementById("selecao-filme");
+            select.innerHTML = "";
+            let temSessoes = false;
+            for (let id in sessoes) {
+                let opt = document.createElement("option");
+                opt.value = id; opt.innerText = sessoes[id].filme;
+                select.appendChild(opt);
+                temSessoes = true;
+            }
+            if(!temSessoes) {
+                select.innerHTML = "<option value=''>Nenhuma sessão criada</option>";
+            }
+            atualizarSessaoAtiva();
+        }
+
+        function atualizarSessaoAtiva() {
+            let idSessao = document.getElementById("selecao-filme").value;
+            if (sessoes[idSessao]) {
+                document.getElementById("info-horario").innerText = formatarDataBR(sessoes[idSessao].data) + " às " + sessoes[idSessao].horario;
+                document.getElementById("vagas-atual").innerText = sessoes[idSessao].disponivel + " / " + sessoes[idSessao].total;
+            } else {
+                document.getElementById("info-horario").innerText = "-";
+                document.getElementById("vagas-atual").innerText = "-";
+            }
+            atualizarPainelEstatisticas();
+        }
+
+        function atualizarPainelEstatisticas() {
+            let idSessao = document.getElementById("selecao-filme").value;
+            if (!idSessao || !sessoes[idSessao]) {
+                document.getElementById("stats-nome-filme").innerText = "-";
+                document.getElementById("stats-criados").innerText = "0";
+                document.getElementById("stats-validados").innerText = "0";
+                document.getElementById("stats-pendentes").innerText = "0";
+                return;
+            }
+
+            let nomeFilmeAtivo = sessoes[idSessao].filme;
+            let ingressosDoFilme = Object.values(bancoDeIngressos).filter(i => i.sessao === nomeFilmeAtivo);
+
+            let total = ingressosDoFilme.length;
+            let validados = ingressosDoFilme.filter(i => i.usado).length;
+            let pendentes = total - validados;
+
+            document.getElementById("stats-nome-filme").innerText = nomeFilmeAtivo;
+            document.getElementById("stats-criados").innerText = total;
+            document.getElementById("stats-validados").innerText = validados;
+            document.getElementById("stats-pendentes").innerText = pendentes;
+        }
+
+        function fazerLogin() {
+            let loginMsg = document.getElementById("msg-login");
+            if (document.getElementById("user-admin").value === "admin" && document.getElementById("pass-admin").value === "8747") {
+                document.getElementById("container-login").classList.add("hidden");
+                document.getElementById("container-admin").classList.remove("hidden");
+                loginMsg.classList.add("hidden");
+                inicializarSistema();
+            } else {
+                loginMsg.innerText = "Credenciais incorretas!";
+                loginMsg.classList.remove("hidden");
+            }
+        }
+
+        function fazerLogout() {
+            if (html5QrcodeScanner) { html5QrcodeScanner.clear(); }
+            document.getElementById("container-admin").classList.add("hidden");
+            document.getElementById("container-login").classList.remove("hidden");
+        }
+
+        function gerarLoteIngressos() {
+            let idSessao = document.getElementById("selecao-filme").value;
+            let qtdDesejada = parseInt(document.getElementById("qtd-ingressos").value);
+            let folha = document.getElementById("folha-recorte");
+            
+            folha.innerHTML = ""; 
+
+            if (!idSessao || !sessoes[idSessao]) return;
+            
+            if (isNaN(qtdDesejada) || qtdDesejada <= 0 || qtdDesejada > 15) {
+                alert("Gere de 1 a no máximo 15 ingressos por lote.");
+                document.getElementById("qtd-ingressos").value = 15;
+                return;
+            }
+
+            if (sessoes[idSessao].disponivel < qtdDesejada) {
+                alert("Lotação esgotada! Restam apenas " + sessoes[idSessao].disponivel + " assentos.");
+                return;
+            }
+
+            document.getElementById("bloco-impressao").classList.remove("hidden");
+
+            for (let i = 0; i < qtdDesejada; i++) {
+                sessoes[idSessao].disponivel--; 
+                
+                let codigoUnico = "CINE-" + Math.floor(100000 + Math.random() * 900000);
+                bancoDeIngressos[codigoUnico] = { 
+                    usado: false, 
+                    sessao: sessoes[idSessao].filme,
+                    idSessao: idSessao
+                };
+
+                let ticket = document.createElement("div");
+                ticket.className = "ingresso-antigo";
+                ticket.style.backgroundImage = `url('${imagemFundoGlobal}')`;
+                let qrcodeId = "qr_" + codigoUnico;
+
+                // QR Code agora gerado em tamanho 85 para combinar com o ingresso compacto
+                ticket.innerHTML = `
+                    <h4>BILHETE CINEMA</h4>
+                    <div class="filme-txt">${sessoes[idSessao].filme}</div>
+                    <div class="info-data-txt">${formatarDataBR(sessoes[idSessao].data)} - ${sessoes[idSessao].horario}</div>
+                    <div class="qr-container"><div id="${qrcodeId}"></div></div>
+                    <div class="cod-txt">${codigoUnico}</div>
+                    <div class="canhoto">Controle Portaria<br>Recorte Manual</div>
+                `;
+                
+                folha.appendChild(ticket);
+                new QRCode(document.getElementById(qrcodeId), { text: codigoUnico, width: 85, height: 85 });
+            }
+
+            salvarNoNavegador();
+            atualizarSessaoAtiva();
+            renderizarSessoesAdmin();
+        }
+
+        function salvarComoPDF() {
+            let elemento = document.getElementById("area-alvo-pdf");
+            document.body.classList.add("modo-impressao-real");
+
+            let opcoes = {
+                margin:       [10, 5, 10, 5], 
+                filename:     'Lote_Ingressos_CineManager.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, letterRendering: true, logging: false },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            setTimeout(() => {
+                html2pdf().set(opcoes).from(elemento).save().then(() => {
+                    document.body.classList.remove("modo-impressao-real");
+                }).catch(err => {
+                    console.error(err);
+                    document.body.classList.remove("modo-impressao-real");
+                });
+            }, 500);
+        }
+
+        function imprimirDireto() {
+            window.print();
+        }
+
+        function iniciarCamera() {
+            if(html5QrcodeScanner) { html5QrcodeScanner.clear(); }
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
+                fps: 15, 
+                qrbox: 220,
+                videoConstraints: { facingMode: "environment" }
+            });
+            html5QrcodeScanner.render((decodedText) => {
+                validarSenha(decodedText);
+            }, (error) => {});
+        }
+
+        function validarSenha(codigoLido) {
+            codigoLido = codigoLido.trim();
+            
+            if (bancoDeIngressos[codigoLido] !== undefined) {
+                let ingresso = bancoDeIngressos[codigoLido];
+                
+                if (ingresso.usado === false) {
+                    ingresso.usado = true;
+                    salvarNoNavegador();
+                    tocarSom("sucesso"); 
+                    mostrarVisualStatus("aprovado", "Acesso Liberado!", ingresso.sessao, codigoLido);
+                    adicionarAoHistórico(codigoLido, ingresso.sessao);
+                    atualizarPainelEstatisticas();
+                } else {
+                    tocarSom("erro"); 
+                    mostrarVisualStatus("recusado", "Acesso Negado!", "Bilhete já foi processado anteriormente.");
+                }
+            } else {
+                tocarSom("erro"); 
+                mostrarVisualStatus("recusado", "Acesso Negado!", "Este código de bilhete não existe.");
+            }
+            document.getElementById("input-leitor").value = "";
+        }
+
+        function adicionarAoHistórico(codigo, filme) {
+            let agora = new Date();
+            let horaFormatada = agora.toTimeString().split(' ')[0];
+            
+            listaAcessosRecentes.unshift({ codigo, filme, hora: horaFormatada });
+            if(listaAcessosRecentes.length > 5) listaAcessosRecentes.pop(); 
+
+            let box = document.getElementById("historico-checkin");
+            box.innerHTML = "";
+
+            listaAcessosRecentes.forEach(item => {
+                let div = document.createElement("div");
+                div.className = "checkin-item";
+                div.innerHTML = `<strong>${item.hora}</strong> - ${item.codigo} <small style='color: var(--md-text-muted);'>(${item.filme})</small>`;
+                box.appendChild(div);
+            });
+        }
+
+        function criarSessao() {
+            let nomeFilme = document.getElementById("novo-filme").value.trim();
+            let dataFilme = document.getElementById("nova-data").value;
+            let horarioFilme = document.getElementById("novo-horario").value;
+            let qtd = parseInt(document.getElementById("nova-quantidade").value);
+            
+            if (nomeFilme === "" || !dataFilme || !horarioFilme || isNaN(qtd) || qtd <= 0) {
+                alert("Preencha todos os campos corretamente.");
+                return;
+            }
+
+            let idExistente = Object.keys(sessoes).find(id => sessoes[id].filme.toLowerCase() === nomeFilme.toLowerCase());
+
+            if (idExistente) {
+                let diferenca = qtd - sessoes[idExistente].total;
+                sessoes[idExistente].total = qtd;
+                sessoes[idExistente].disponivel += diferenca;
+                sessoes[idExistente].data = dataFilme;
+                sessoes[idExistente].horario = horarioFilme;
+            } else {
+                sessoes["sessao_" + Date.now()] = { 
+                    filme: nomeFilme, 
+                    data: dataFilme, 
+                    horario: horarioFilme, 
+                    total: qtd, 
+                    disponivel: qtd 
+                };
+            }
+
+            salvarNoNavegador();
+            document.getElementById("novo-filme").value = "";
+            document.getElementById("nova-data").value = "";
+            document.getElementById("novo-horario").value = "";
+            document.getElementById("nova-quantidade").value = "";
+            inicializarSistema();
+            alert("Sessão salva com sucesso!");
+        }
+
+        function removerSessao(id) {
+            if (confirm("Remover permanentemente esta sessão?")) {
+                delete sessoes[id];
+                salvarNoNavegador();
+                inicializarSistema();
+            }
+        }
+
+        function renderizarSessoesAdmin() {
+            let lista = document.getElementById("lista-sessoes-admin");
+            lista.innerHTML = "";
+            for (let id in sessoes) {
+                let item = document.createElement("div");
+                item.className = "sessao-item";
+                item.innerHTML = `
+                    🎬 <strong>${sessoes[id].filme}</strong><br>
+                    Exibição: ${formatarDataBR(sessoes[id].data)} às ${sessoes[id].horario}<br>
+                    Disponibilidade: ${sessoes[id].disponivel} de ${sessoes[id].total} vagas<br><br>
+                    <button class="btn-danger" onclick="removerSessao('${id}')">🗑️ Excluir Sala</button>
+                `;
+                lista.appendChild(item);
+            }
+        }
+
+        function resetarTudo() {
+            if(confirm("ATENÇÃO: Isso apagará TODOS os dados! Continuar?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
+ent("div");
+                item.className = "sessao-item";
+                item.innerHTML = `
+                    🎬 <strong>${sessoes[id].filme}</strong><br>
+                    Exibição: ${formatarDataBR(sessoes[id].data)} às ${sessoes[id].horario}<br>
+                    Disponibilidade: ${sessoes[id].disponivel} de ${sessoes[id].total} vagas<br><br>
+                    <button class="btn-danger" onclick="removerSessao('${id}')">🗑️ Excluir Sala</button>
+                `;
+                lista.appendChild(item);
+            }
+        }
+
+        function resetarTudo() {
+            if(confirm("ATENÇÃO: Isso apagará TODOS os dados! Continuar?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
